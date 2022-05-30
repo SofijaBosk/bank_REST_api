@@ -84,8 +84,10 @@ public class RacunR {
     @Path("getracuni/{idK}")
     public Response getAllRacuniZaKomitenta(@PathParam("idK")int idK){
         Komitent komitent=em.find(Komitent.class, idK);
+        if(komitent==null) return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Ovaj komitent ne postoji").build();
         List<Racun> r=new LinkedList<>();
         r=komitent.getRacunList();
+        if(r==null ||r.isEmpty()) return Response.status(Response.Status.OK).entity("Ovaj komitent nema racun").build();
         return Response.status(Response.Status.OK).entity(new GenericEntity<List<Racun>>(r){}).build();
     }
    
