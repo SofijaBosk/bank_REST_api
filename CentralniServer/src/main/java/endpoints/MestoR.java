@@ -7,7 +7,16 @@ package endpoints;
 
 import entities.Mesto;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSContext;
+import javax.jms.JMSException;
+import javax.jms.JMSProducer;
+import javax.jms.ObjectMessage;
+import javax.jms.Queue;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.GET;
@@ -27,13 +36,32 @@ public class MestoR {
     @PersistenceContext(unitName = "my_project_persistence")
     EntityManager em;
     
+    @Resource(lookup="jms/__defaultConnectionFactory")
+    private ConnectionFactory connectionFactory;
+    
+    @Resource(lookup = "myMesta")
+    private Queue myMesta;
+    
     @POST
     @Path("createmesto")
     public Response createMesto(Mesto mesto){
-        Mesto m=em.find(Mesto.class, mesto.getIdM());
-        if(m!=null) return Response.status(Response.Status.CONFLICT).entity("Mesto vec postoji").build();
-        em.persist(mesto);
-        return Response.status(Response.Status.CREATED).entity("Uspesno kreirano mesto "+mesto.getNaziv()).build();
+        try {
+            JMSContext context=connectionFactory.createContext();
+            JMSProducer producer=context.createProducer();
+            
+            Mesto m=em.find(Mesto.class, mesto.getIdM());
+            if(m!=null) return Response.status(Response.Status.CONFLICT).entity("Mesto vec postoji").build();
+            //em.persist(mesto);
+
+            ObjectMessage objMsg=context.createObjectMessage();
+            objMsg.setObject(mesto);
+            producer.send(myMesta, objMsg);
+            
+            return Response.status(Response.Status.CREATED).entity("Uspesno kreirano mesto "+mesto.getNaziv()).build();
+        } catch (JMSException ex) {
+            Logger.getLogger(MestoR.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Greska kod prenosa mesta").build();
     }
     
     @GET
