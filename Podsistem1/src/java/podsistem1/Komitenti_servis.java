@@ -38,7 +38,7 @@ public class Komitenti_servis extends Thread{
     @Override
     public void run() {
         
-            
+           
          JMSContext context=connectionFactory.createContext();
         JMSConsumer consumer=context.createConsumer(myKomitenti);
         

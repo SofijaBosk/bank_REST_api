@@ -16,9 +16,11 @@ import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSConsumer;
 import javax.jms.JMSContext;
 import javax.jms.JMSException;
 import javax.jms.JMSProducer;
+import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.TextMessage;
@@ -49,6 +51,10 @@ public class KomitentR {
     
     @Resource(lookup = "myKomitenti")
     private Queue myKomitenti;
+    @Resource(lookup = "myKomitentRequest")
+    private Queue myKomitentRequest;
+    @Resource(lookup = "myKomitentGetAll")
+    private Queue myKomitentGetAll;
     
     @POST
     @Path("createkomitent")
@@ -91,13 +97,44 @@ public class KomitentR {
     
     
     @GET
-    @Path("getall/{idK}")
-    public Response getAllKomitent(@PathParam("idK")int idK){
-        Komitent komitent=em.find(Komitent.class, idK);
-        return Response.status(Response.Status.OK).entity(komitent).build();
+    @Path("getall")
+    public Response getAllKomitent(){
+//        Komitent komitent=em.find(Komitent.class, idK);
+//        return Response.status(Response.Status.OK).entity(komitent).build();
         
+
+        try {
+            JMSContext context=connectionFactory.createContext();
+            JMSProducer producer=context.createProducer();
+            JMSConsumer consumer=context.createConsumer(myKomitentGetAll);
+            
+            TextMessage txtMsg=context.createTextMessage();
+            txtMsg.setText("getall");
+            //txtMsg.setStringProperty("klasa", "Filijala");     
+            producer.send(myKomitentRequest, txtMsg);
+            
+            List<Komitent> komitenti=new LinkedList<>();
+            while(true){
+                Message objMsg=consumer.receive(5000);
+                if(objMsg instanceof ObjectMessage){
+                    ObjectMessage obj=(ObjectMessage)objMsg;
+                    Komitent kom=(Komitent) obj.getObject();
+                    komitenti.add(kom);
+                }
+                else break;
+            }
+            System.out.println(komitenti);
+            
+//            List<Filijala> listaFilijala=em.createNamedQuery("Filijala.findAll",Filijala.class).getResultList();
+//            System.out.println(listaFilijala);
+            return Response.status(Response.Status.OK).entity(new GenericEntity<List<Komitent>>(komitenti){}).build();
+        } catch (JMSException ex) {
+            Logger.getLogger(FilijalaR.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
-//        List<Komitent> listaKomitent=em.createNamedQuery("Komitent.findAll",Komitent.class).getResultList();             
-//        return Response.status(Response.Status.OK).entity(new GenericEntity<List<Komitent>>(listaKomitent){}).build();
+        return Response.status(Response.Status.NOT_FOUND).entity("Greska kod dohvatanja komitenata").build();
+
     }
+    
 }
+    

@@ -5,18 +5,23 @@
  */
 package endpoints;
 
+import entities.Filijala;
 import entities.Mesto;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSConsumer;
 import javax.jms.JMSContext;
 import javax.jms.JMSException;
 import javax.jms.JMSProducer;
+import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Queue;
+import javax.jms.TextMessage;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.GET;
@@ -41,6 +46,10 @@ public class MestoR {
     
     @Resource(lookup = "myMesta")
     private Queue myMesta;
+    @Resource(lookup = "myMestoRequest")
+    private Queue myMestoRequest;
+    @Resource(lookup = "myMestoGetAll")
+    private Queue myMestoGetAll;
     
     @POST
     @Path("createmesto")
@@ -67,9 +76,40 @@ public class MestoR {
     @GET
     @Path("getall")
     public Response getAllMesto(){
-        List<Mesto> listaMesta=em.createNamedQuery("Mesto.findAll",Mesto.class).getResultList();
-        System.out.println(listaMesta);
-        return Response.status(Response.Status.OK).entity(new GenericEntity<List<Mesto>>(listaMesta){}).build();
+         try {
+            JMSContext context=connectionFactory.createContext();
+            JMSProducer producer=context.createProducer();
+            JMSConsumer consumer=context.createConsumer(myMestoGetAll);
+            
+            TextMessage txtMsg=context.createTextMessage();
+            txtMsg.setText("getall");
+            //txtMsg.setStringProperty("klasa", "Filijala");     
+            producer.send(myMestoRequest, txtMsg);
+            
+            List<Mesto> mesta=new LinkedList<>();
+            while(true){
+                Message objMsg=consumer.receive(5000);
+                if(objMsg instanceof ObjectMessage){
+                    ObjectMessage obj=(ObjectMessage)objMsg;
+                    Mesto mes=(Mesto) obj.getObject();
+                    mesta.add(mes);
+                }
+                else break;
+            }
+            System.out.println(mesta);
+            
+//            List<Filijala> listaFilijala=em.createNamedQuery("Filijala.findAll",Filijala.class).getResultList();
+//            System.out.println(listaFilijala);
+            return Response.status(Response.Status.OK).entity(new GenericEntity<List<Mesto>>(mesta){}).build();
+        } catch (JMSException ex) {
+            Logger.getLogger(FilijalaR.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return Response.status(Response.Status.NOT_FOUND).entity("Greska kod dohvatanja filijala").build();
     }
+             
+//        List<Mesto> listaMesta=em.createNamedQuery("Mesto.findAll",Mesto.class).getResultList();
+//        System.out.println(listaMesta);
+//        return Response.status(Response.Status.OK).entity(new GenericEntity<List<Mesto>>(listaMesta){}).build();
     
 }

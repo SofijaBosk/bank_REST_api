@@ -5,6 +5,7 @@ endpoints\RacunR$2.class
 resources\Role.class
 entities\Filijala.class
 endpoints\RacunR.class
+endpoints\TransakcijaR$3.class
 entities\Racun.class
 entities\Transakcija.class
 endpoints\TransakcijaR$1.class
@@ -19,6 +20,7 @@ endpoints\MestoR$1.class
 endpoints\RacunR$1.class
 endpoints\TransakcijaR.class
 endpoints\FilijalaR$1.class
+requests\KomitentRequest.class
 endpoints\FilijalaR.class
 entities\Komitent.class
 entities\Uplata.class
