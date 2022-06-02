@@ -87,9 +87,7 @@ public class RacunR {
              Komitent k=em.find(Komitent.class, racun.getIdK().getIdK());
              if(k==null) return Response.status(Response.Status.CONFLICT).entity("Komitent ne postoji").build();
              
-             
-             //Date vreme=em.createQuery("SELECT CURRENT_TIMESTAMP",Date.class).getSingleResult();
-             
+                          
              JMSContext context=connectionFactory.createContext();
              JMSProducer producer=context.createProducer();
              
@@ -160,10 +158,7 @@ public class RacunR {
             }
             System.out.println(racuni);
 
-             
-//        List<Racun> r=new LinkedList<>();
-//        r=komitent.getRacunList();
-//        if(r==null ||r.isEmpty()) return Response.status(Response.Status.OK).entity("Ovaj komitent nema racun").build();
+
         return Response.status(Response.Status.OK).entity(new GenericEntity<List<Racun>>(racuni){}).build();
          } catch (JMSException ex) {
              Logger.getLogger(RacunR.class.getName()).log(Level.SEVERE, null, ex);
@@ -202,10 +197,6 @@ public class RacunR {
             }
             System.out.println(transakcije);
 
-             
-//        List<Racun> r=new LinkedList<>();
-//        r=komitent.getRacunList();
-//        if(r==null ||r.isEmpty()) return Response.status(Response.Status.OK).entity("Ovaj komitent nema racun").build();
         return Response.status(Response.Status.OK).entity(new GenericEntity<List<Transakcija>>(transakcije){}).build();
          } catch (JMSException ex) {
              Logger.getLogger(RacunR.class.getName()).log(Level.SEVERE, null, ex);

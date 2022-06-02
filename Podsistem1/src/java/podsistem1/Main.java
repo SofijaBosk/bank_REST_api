@@ -84,51 +84,6 @@ public class Main {
     private static Queue myFilijaleGetAll;
     
     
-    
-    
-//    @Transactional
-//    public void createKomitent(){
-//        JMSContext context=connectionFactory.createContext();
-//        JMSConsumer consumer=context.createConsumer(myKomitenti);
-//        em=emf.createEntityManager();
-//        while(true){
-//            try {
-//                ObjectMessage objMsg=(ObjectMessage)consumer.receive();
-//                Komitent komitent=(Komitent)objMsg.getObject();
-//                Komitent kom=new Komitent();
-//                kom.setIdK(komitent.getIdK());
-//                kom.setAdresa(komitent.getAdresa());
-//                kom.setNaziv(komitent.getNaziv());
-//                //em.persist(kom);
-//                
-//                //em.joinTransaction();
-//                utx.begin();
-//                em.joinTransaction();
-//                em.persist(kom);
-//                em.flush();
-//                utx.commit();
-//                System.out.println(kom.toString());
-//                System.out.println("Uspesno prenesena poruka za komitenta do podsistema!");
-//            } catch (JMSException ex) {
-//                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-//            } catch (NotSupportedException ex) {
-//                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-//            } catch (SystemException ex) {
-//                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-//            } catch (RollbackException ex) {
-//                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-//            } catch (HeuristicMixedException ex) {
-//                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-//            } catch (HeuristicRollbackException ex) {
-//                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-//            } catch (SecurityException ex) {
-//                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-//            } catch (IllegalStateException ex) {
-//                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-//    }
-    
     @Transactional
     public void createKomitent(){
         JMSContext context=connectionFactory.createContext();
@@ -142,9 +97,7 @@ public class Main {
                 kom.setIdK(komitent.getIdK());
                 kom.setAdresa(komitent.getAdresa());
                 kom.setNaziv(komitent.getNaziv());
-                //em.persist(kom);
                 
-                //em.joinTransaction();
                 utx.begin();
                 em.joinTransaction();
                 em.persist(kom);
@@ -233,9 +186,6 @@ public class Main {
                 novaFilijala.setNaziv(fil.getNaziv());
                 novaFilijala.setIdM(fil.getIdM());
                 
-                //em.persist(kom);
-                
-                //em.joinTransaction();
                 utx.begin();
                 em.joinTransaction();
                 em.persist(novaFilijala);
@@ -272,8 +222,7 @@ public class Main {
         JMSConsumer consumer=context.createConsumer(myFilijaleRequest);
         JMSProducer producer=context.createProducer();
         
-//        em.clear();
-//        em=emf.createEntityManager();
+
         consumer.setMessageListener((message) -> {
             try {
                 TextMessage txtMsg=(TextMessage)message;
@@ -281,19 +230,9 @@ public class Main {
                 System.out.println("Stigla");
                 if(poruka.equals("getall")){
                     System.out.println("Uspesno prenesena poruka za kreiranje filijale do podsistema!");
-//                    utx.begin();
-//                    em.joinTransaction();
+
                     List<Filijala> lista=em.createNamedQuery("Filijala.findAll",Filijala.class).getResultList(); 
-                    //utx.commit();
-                    
-                    
-//                    Filijala fil=lista.get(1);
-//                    System.out.println(fil);
-//                    for(int i=0;i<lista.size();i++){
-//                        ObjectMessage objMsg=context.createObjectMessage();
-//                        objMsg.setObject((Filijala)lista.get(i));
-//                        producer.send(myFilijaleGetAll, objMsg);
-//                    }
+
                     for(int i=0;i<lista.size();i++){
                         Filijala fil=lista.get(i);
                         ObjectMessage objMsg1=context.createObjectMessage();
@@ -304,8 +243,6 @@ public class Main {
                     objMsg.setText("kraj");
                     producer.send(myFilijaleGetAll, objMsg);
 
-                    //producer.send(myFilijale, objMsg);
-                    //utx.commit();
                     System.out.println("Uspesno prenete sve filijale");
                 }
             } catch (JMSException ex) {
@@ -325,8 +262,6 @@ public class Main {
     public static void main(String[] args) {
         em=emf.createEntityManager();
         Main m=new Main();
-        //m.createKomitent();
-        //System.out.println(em.getTransaction());
          m.createKomitent();
          m.createMesto();
          m.createFilijala();
@@ -346,8 +281,6 @@ public class Main {
         JMSConsumer consumer=context.createConsumer(myKomitentRequest);
         JMSProducer producer=context.createProducer();
         
-//        em.clear();
-//        em=emf.createEntityManager();
         consumer.setMessageListener((message) -> {
             try {
                 TextMessage txtMsg=(TextMessage)message;
@@ -355,19 +288,10 @@ public class Main {
                 System.out.println("Stigla");
                 if(poruka.equals("getall")){
                     System.out.println("Uspesno prenesena poruka za kreiranje komitente do podsistema!");
-//                    utx.begin();
-//                    em.joinTransaction();
+
                     List<Komitent> lista=em.createNamedQuery("Komitent.findAll",Komitent.class).getResultList(); 
-                    //utx.commit();
-                    
-                    
-//                    Filijala fil=lista.get(1);
-//                    System.out.println(fil);
-//                    for(int i=0;i<lista.size();i++){
-//                        ObjectMessage objMsg=context.createObjectMessage();
-//                        objMsg.setObject((Filijala)lista.get(i));
-//                        producer.send(myFilijaleGetAll, objMsg);
-//                    }
+                  
+
                     for(int i=0;i<lista.size();i++){
                         Komitent kom=lista.get(i);
                         ObjectMessage objMsg1=context.createObjectMessage();
@@ -378,8 +302,6 @@ public class Main {
                     objMsg.setText("kraj");
                     producer.send(myKomitentGetAll, objMsg);
 
-                    //producer.send(myFilijale, objMsg);
-                    //utx.commit();
                     System.out.println(lista);
                     System.out.println("Uspesno prenete sve komitente");
                 }
@@ -399,8 +321,7 @@ public class Main {
         JMSConsumer consumer=context.createConsumer(myMestoRequest);
         JMSProducer producer=context.createProducer();
         
-//        em.clear();
-//        em=emf.createEntityManager();
+
         consumer.setMessageListener((message) -> {
             try {
                 TextMessage txtMsg=(TextMessage)message;
@@ -420,8 +341,6 @@ public class Main {
                     objMsg.setText("kraj");
                     producer.send(myMestoGetAll, objMsg);
 
-                    //producer.send(myFilijale, objMsg);
-                    //utx.commit();
                     System.out.println(lista);
                     System.out.println("Uspesno prenete sve komitente");
                 }

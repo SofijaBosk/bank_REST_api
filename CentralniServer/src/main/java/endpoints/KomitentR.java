@@ -68,8 +68,7 @@ public class KomitentR {
             ObjectMessage objMsg=context.createObjectMessage();
             objMsg.setObject(komitent);
             producer.send(myKomitenti, objMsg);
-            
-//            em.persist(komitent);
+
             return Response.status(Response.Status.CREATED).entity("Uspesno kreiran komitent "+komitent.getNaziv()).build();
         } catch (JMSException ex) {
             Logger.getLogger(KomitentR.class.getName()).log(Level.SEVERE, null, ex);
@@ -98,10 +97,7 @@ public class KomitentR {
     
     @GET
     @Path("getall")
-    public Response getAllKomitent(){
-//        Komitent komitent=em.find(Komitent.class, idK);
-//        return Response.status(Response.Status.OK).entity(komitent).build();
-        
+    public Response getAllKomitent(){     
 
         try {
             JMSContext context=connectionFactory.createContext();
@@ -125,8 +121,6 @@ public class KomitentR {
             }
             System.out.println(komitenti);
             
-//            List<Filijala> listaFilijala=em.createNamedQuery("Filijala.findAll",Filijala.class).getResultList();
-//            System.out.println(listaFilijala);
             return Response.status(Response.Status.OK).entity(new GenericEntity<List<Komitent>>(komitenti){}).build();
         } catch (JMSException ex) {
             Logger.getLogger(FilijalaR.class.getName()).log(Level.SEVERE, null, ex);

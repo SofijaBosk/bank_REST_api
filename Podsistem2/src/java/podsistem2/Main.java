@@ -309,32 +309,31 @@ public class Main {
                 racun.setStanje(racun.getStanje()+trans.getIznos());
                 
                 
-            if(racun.getStanje()>= -racun.getDozvoljeniMinus()) {
-                racun.setStatus("aktivan");
-            }
-            racun.setBrTransakcija(racun.getBrTransakcija()+1);
-            //em.flush();
-            Transakcija novaTransakcija=new Transakcija();
-            novaTransakcija.setDatumObavljanja(new Date());
-            novaTransakcija.setRedBr(racun.getBrTransakcija());
-            novaTransakcija.setIdRacun(racun);
-            //novaTransakcija.setIdT(trans.getIdT());
-            novaTransakcija.setSvrha("uplata");
-            novaTransakcija.setIznos(trans.getIznos());
-            em.persist(novaTransakcija); 
-            em.flush();
-            utx.commit();
+                if(racun.getStanje()>= -racun.getDozvoljeniMinus()) {
+                    racun.setStatus("aktivan");
+                }
+                racun.setBrTransakcija(racun.getBrTransakcija()+1);
+                em.flush();
+                Transakcija novaTransakcija=new Transakcija();
+                novaTransakcija.setDatumObavljanja(new Date());
+                novaTransakcija.setRedBr(racun.getBrTransakcija());
+                novaTransakcija.setIdRacun(racun);
+                novaTransakcija.setIdT(trans.getIdT());
+                novaTransakcija.setSvrha("uplata");
+                novaTransakcija.setIznos(trans.getIznos());
+                em.persist(novaTransakcija); 
+                em.flush();
+                utx.commit();
 
 
-           utx.begin();
-           em.joinTransaction();
-            Uplata uplata=new Uplata();
-            uplata.setIdUplata(novaTransakcija.getIdT());
-            uplata.setIdFilijala(fil);
-            System.out.println(uplata);
-            em.persist(uplata);
-                
-                
+               utx.begin();
+               em.joinTransaction();
+                Uplata uplata=new Uplata();
+                uplata.setIdUplata(novaTransakcija.getIdT());
+                uplata.setIdFilijala(fil);
+                System.out.println(uplata);
+                em.persist(uplata);
+
                 em.flush();
                 utx.commit();
                 
@@ -402,7 +401,6 @@ public class Main {
                 Isplata isplata=new Isplata();
                 isplata.setIdIsplata(novaTransakcija.getIdT());
                 isplata.setIdFilijala(fil);
-                //prenos.setTransakcija(novaTransakcija);
                 System.out.println(isplata);
                 em.persist(isplata);
                 
@@ -463,8 +461,7 @@ public class Main {
                     objMsg.setText("kraj");
                     producer.send(racuniZaKomitenta, objMsg);
 
-                    //producer.send(myFilijale, objMsg);
-                    //utx.commit();
+
                     System.out.println("Uspesno prenete sve transakcije za korisnika" + komitent.getNaziv());
                 }
             } catch (JMSException ex) {
@@ -506,8 +503,6 @@ public class Main {
                     objMsg.setText("kraj");
                     producer.send(transakcijeZaRacun, objMsg);
 
-                    //producer.send(myFilijale, objMsg);
-                    //utx.commit();
                     System.out.println("Uspesno prenete sve transakcije za racun" + racun.toString());
                 }
             } catch (JMSException ex) {

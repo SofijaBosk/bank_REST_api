@@ -83,9 +83,6 @@ public class FilijalaR {
     @GET
     @Path("getall") 
     public Response getAllFilijala(){
-//        Filijala f=em.find(Filijala.class, 3);
-//        return Response.status(Response.Status.OK).entity(f).build();
-           
 
         try {
             JMSContext context=connectionFactory.createContext();
@@ -109,8 +106,6 @@ public class FilijalaR {
             }
             System.out.println(filijale);
             
-//            List<Filijala> listaFilijala=em.createNamedQuery("Filijala.findAll",Filijala.class).getResultList();
-//            System.out.println(listaFilijala);
             return Response.status(Response.Status.OK).entity(new GenericEntity<List<Filijala>>(filijale){}).build();
         } catch (JMSException ex) {
             Logger.getLogger(FilijalaR.class.getName()).log(Level.SEVERE, null, ex);

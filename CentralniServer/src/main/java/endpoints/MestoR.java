@@ -98,8 +98,6 @@ public class MestoR {
             }
             System.out.println(mesta);
             
-//            List<Filijala> listaFilijala=em.createNamedQuery("Filijala.findAll",Filijala.class).getResultList();
-//            System.out.println(listaFilijala);
             return Response.status(Response.Status.OK).entity(new GenericEntity<List<Mesto>>(mesta){}).build();
         } catch (JMSException ex) {
             Logger.getLogger(FilijalaR.class.getName()).log(Level.SEVERE, null, ex);
@@ -108,8 +106,4 @@ public class MestoR {
         return Response.status(Response.Status.NOT_FOUND).entity("Greska kod dohvatanja filijala").build();
     }
              
-//        List<Mesto> listaMesta=em.createNamedQuery("Mesto.findAll",Mesto.class).getResultList();
-//        System.out.println(listaMesta);
-//        return Response.status(Response.Status.OK).entity(new GenericEntity<List<Mesto>>(listaMesta){}).build();
-    
 }
