@@ -5,7 +5,6 @@ endpoints\RacunR$2.class
 resources\Role.class
 entities\Filijala.class
 endpoints\RacunR.class
-endpoints\TransakcijaR$3.class
 entities\Racun.class
 entities\Transakcija.class
 endpoints\TransakcijaR$1.class
@@ -14,6 +13,7 @@ resources\User.class
 endpoints\KomitentR.class
 endpoints\MestoR.class
 authentication\BasicAuthFilter.class
+endpoints\KomitentR$1.class
 endpoints\TransakcijaR$2.class
 com\mycompany\centralniserver\JAXRSConfiguration.class
 endpoints\MestoR$1.class
